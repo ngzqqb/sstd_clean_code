@@ -129,7 +129,7 @@ inline static void castCRLFOrCRToLF(const fs::path & arg) {
         return;
     }
     const static std::wregex varCheckFormat{
-        LR"!(^[^.].*\.(?:(?:txt)|(?:pri)|(?:pro)|(?:cpp)|(?:c)|(?:h)|(?:hpp)|(?:hxx)|(?:qml)|(?:tex))$)!" ,
+        LR"!(^[^.].*\.(?:(?:txt)|(?:pri)|(?:pro)|(?:cpp)|(?:c)|(?:cc)|(?:h)|(?:hpp)|(?:hxx)|(?:qml)|(?:tex))$)!" ,
         std::regex_constants::icase | std::regex_constants::ECMAScript
     };
     const static std::wregex varCheckIgnoreBOM{
