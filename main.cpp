@@ -1,8 +1,11 @@
 ﻿#include <thread>
 #include <atomic>
 #include <string>
-#include <string_view>
 #include <chrono>
+#include <string_view>
+
+#include <mutex>
+#include <condition_variable>
 
 using namespace std::chrono_literals;
 using namespace std::string_literals;
@@ -161,6 +164,8 @@ public:
     fs::path rootPath;
     std::vector< fs::path > paths;
     std::atomic< unsigned int > threadCount{ 0 };
+    std::condition_variable wait;
+    std::mutex mutex;
 
     inline Main(const fs::path & arg) : rootPath(arg) {
         paths.push_back(rootPath / ".." / "chapter01");
@@ -175,28 +180,31 @@ public:
 
     inline void call() {
 
+        std::unique_lock varLock{ mutex };
+
         for (const auto & varI : paths) {
 
             /*限制线程数量*/
             while (threadCount.load() > (std::thread::hardware_concurrency() + 2)) {
-                std::this_thread::sleep_for(10ms);
+                wait.wait_for(varLock, 10ms);
             }
 
             ++threadCount;
 
-            std::thread([this,varI]() {
+            std::thread([this, varI]() {
                 try {
                     castCRLFOrCRToLF(varI);
                 } catch (...) {
                 }
                 --threadCount;
+                wait.notify_all();
             }).detach();
 
         }
 
         /*等待所有线程完成*/
         while (threadCount.load() > 0) {
-            std::this_thread::sleep_for(10ms);
+            wait.wait_for(varLock, 10ms);
         }
 
     }
