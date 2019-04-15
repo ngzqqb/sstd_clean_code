@@ -156,41 +156,56 @@ inline static void castCRLFOrCRToLF(const fs::path & arg) {
     }
 }
 
-int main(int, char **) {
-    fs::path varPath{ CURRENT_DEBUG_PATH };
-    fs::path varPaths[]{
-        varPath / ".." / "chapter01",
-        varPath / ".." / "chapter02",
-        varPath / ".." / "latex_book",
-        varPath / ".." / "qt_quick_book_private",
-        varPath / ".." / "sstd_clean_code",
-        varPath / ".." / "sstd_copy_qml",
-        varPath / ".." / "sstd_library",
-        varPath / ".." / "sstd_qt_qml_quick_library"
-    };
+class Main {
+public:
+    fs::path rootPath;
+    std::vector< fs::path > paths;
+    std::atomic< unsigned int > threadCount{ 0 };
 
-    std::atomic< unsigned int > varThreadCount{ 0 };
-    for (const auto & varI : varPaths) {
-        ++varThreadCount;
+    inline Main(const fs::path & arg) : rootPath(arg) {
+        paths.push_back(rootPath / ".." / "chapter01");
+        paths.push_back(rootPath / ".." / "chapter02");
+        paths.push_back(rootPath / ".." / "latex_book");
+        paths.push_back(rootPath / ".." / "qt_quick_book_private");
+        paths.push_back(rootPath / ".." / "sstd_clean_code");
+        paths.push_back(rootPath / ".." / "sstd_copy_qml");
+        paths.push_back(rootPath / ".." / "sstd_library");
+        paths.push_back(rootPath / ".." / "sstd_qt_qml_quick_library");
+    }
 
-        /*限制线程数量*/
-        while (varThreadCount.load() > (std::thread::hardware_concurrency() + 1)) {
+    inline void call() {
+
+        for (const auto & varI : paths) {
+
+            /*限制线程数量*/
+            while (threadCount.load() > (std::thread::hardware_concurrency() + 2)) {
+                std::this_thread::sleep_for(10ms);
+            }
+
+            ++threadCount;
+
+            std::thread([this,varI]() {
+                try {
+                    castCRLFOrCRToLF(varI);
+                } catch (...) {
+                }
+                --threadCount;
+            }).detach();
+
+        }
+
+        /*等待所有线程完成*/
+        while (threadCount.load() > 0) {
             std::this_thread::sleep_for(10ms);
         }
 
-        std::thread([varPath = varI, &varThreadCount]() {
-            try {
-                castCRLFOrCRToLF(varPath);
-            } catch (...) {
-            }
-            --varThreadCount;
-        }).detach();
-
     }
 
-    /*等待所有线程完成*/
-    if (varThreadCount.load() > 0) {
-        std::this_thread::sleep_for(10ms);
-    }
+};
+
+int main(int, char **) {
+
+    auto var = new Main{ CURRENT_DEBUG_PATH };
+    var->call();
 
 }
