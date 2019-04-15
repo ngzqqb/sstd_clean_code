@@ -156,6 +156,3 @@ int main(int, char **) {
     fs::path varPath{ CURRENT_DEBUG_PATH };
     castCRLFOrCRToLF(varPath / "..");
 }
-
-
-
