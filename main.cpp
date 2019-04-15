@@ -1,6 +1,10 @@
-﻿
+﻿#include <thread>
+#include <atomic>
 #include <string>
 #include <string_view>
+#include <chrono>
+
+using namespace std::chrono_literals;
 using namespace std::string_literals;
 using namespace std::string_view_literals;
 
@@ -154,5 +158,39 @@ inline static void castCRLFOrCRToLF(const fs::path & arg) {
 
 int main(int, char **) {
     fs::path varPath{ CURRENT_DEBUG_PATH };
-    castCRLFOrCRToLF(varPath / "..");
+    fs::path varPaths[]{
+        varPath / ".." / "chapter01",
+        varPath / ".." / "chapter02",
+        varPath / ".." / "latex_book",
+        varPath / ".." / "qt_quick_book_private",
+        varPath / ".." / "sstd_clean_code",
+        varPath / ".." / "sstd_copy_qml",
+        varPath / ".." / "sstd_library",
+        varPath / ".." / "sstd_qt_qml_quick_library"
+    };
+
+    std::atomic< int > varThreadCount{ 0 };
+    for (const auto & varI : varPaths) {
+        ++varThreadCount;
+
+        /*限制线程数量*/
+        while (varThreadCount.load() > (std::thread::hardware_concurrency() + 1)) {
+            std::this_thread::sleep_for(10ms);
+        }
+
+        std::thread([varPath = varI, &varThreadCount]() {
+            try {
+                castCRLFOrCRToLF(varPath);
+            } catch (...) {
+            }
+            --varThreadCount;
+        }).detach();
+
+    }
+
+    /*等待所有线程完成*/
+    if (varThreadCount.load() > 0) {
+        std::this_thread::sleep_for(10ms);
+    }
+
 }
