@@ -169,7 +169,7 @@ int main(int, char **) {
         varPath / ".." / "sstd_qt_qml_quick_library"
     };
 
-    std::atomic< int > varThreadCount{ 0 };
+    std::atomic< unsigned int > varThreadCount{ 0 };
     for (const auto & varI : varPaths) {
         ++varThreadCount;
 
