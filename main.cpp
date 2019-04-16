@@ -176,6 +176,7 @@ public:
         paths.push_back(rootPath / ".." / "sstd_copy_qml");
         paths.push_back(rootPath / ".." / "sstd_library");
         paths.push_back(rootPath / ".." / "sstd_qt_qml_quick_library");
+        paths.push_back(rootPath / ".." / "sstd_create_default_project");
     }
 
     inline void call() {
