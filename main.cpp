@@ -170,13 +170,23 @@ public:
     inline Main(const fs::path & arg) : rootPath(arg) {
         paths.push_back(rootPath / ".." / "chapter01");
         paths.push_back(rootPath / ".." / "chapter02");
+        paths.push_back(rootPath / ".." / "chapter03");
+        paths.push_back(rootPath / ".." / "chapter04");
+        paths.push_back(rootPath / ".." / "chapter05");
+        paths.push_back(rootPath / ".." / "chapter06");
+        paths.push_back(rootPath / ".." / "chapter07");
+        paths.push_back(rootPath / ".." / "chapter08");
+        paths.push_back(rootPath / ".." / "chapter09");
+        paths.push_back(rootPath / ".." / "chapter10");
         paths.push_back(rootPath / ".." / "latex_book");
-        paths.push_back(rootPath / ".." / "qt_quick_book_private");
         paths.push_back(rootPath / ".." / "sstd_clean_code");
         paths.push_back(rootPath / ".." / "sstd_copy_qml");
+        paths.push_back(rootPath / ".." / "sstd_create_default_project");
+        paths.push_back(rootPath / ".." / "sstd_create_windows_qt_dll_link");
+        paths.push_back(rootPath / ".." / "sstd_introduce_qmake");
         paths.push_back(rootPath / ".." / "sstd_library");
         paths.push_back(rootPath / ".." / "sstd_qt_qml_quick_library");
-        paths.push_back(rootPath / ".." / "sstd_create_default_project");
+        paths.push_back(rootPath / ".." / "qt_quick_book_private");
     }
 
     inline void call() {
